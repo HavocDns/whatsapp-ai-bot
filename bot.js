@@ -29,9 +29,9 @@ async function getAIResponse(message) {
 venom
   .create({
     session: 'whatsapp-bot',
-    headless: false,
+    headless: true, // 👈 Agora em modo headless (sem interface)
     useChrome: true,
-    protocolTimeout: 60000, // ✅ evita timeout
+    protocolTimeout: 60000,
     browserArgs: [
       '--no-sandbox',
       '--disable-setuid-sandbox',

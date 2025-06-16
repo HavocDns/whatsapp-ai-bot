@@ -1,0 +1,4 @@
+[0616/131044.574:ERROR:process_reader_win.cc(151)] SuspendThread: Acesso negado. (0x5)
+[0616/131044.579:ERROR:file_io_win.cc(161)] CreateFile C:\Users\ribei\AppData\Local\Temp\puppeteer_dev_profile-LxvtRW\Crashpad\settings.dat: O sistema não pode encontrar o caminho especificado. (0x3)
+[0616/131044.580:ERROR:file_io_win.cc(170)] CreateFile C:\Users\ribei\AppData\Local\Temp\puppeteer_dev_profile-LxvtRW\Crashpad\reports\bb0ae8e2-e8ca-46c3-88aa-9358bfea228a.dmp: O sistema não pode encontrar o caminho especificado. (0x3)
+[0616/131044.580:ERROR:crash_report_exception_handler.cc(97)] PrepareNewCrashReport failed

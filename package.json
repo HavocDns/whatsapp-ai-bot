@@ -1,16 +1,13 @@
 {
-  "name": "whatsapp_ai_bot",
+  "name": "whatsapp-ai-bot",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node index.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
   "dependencies": {
-    "axios": "^1.10.0",
-    "venom-bot": "^5.3.0"
+    "@hapi/boom": "^10.0.1",
+    "@whiskeysockets/baileys": "^6.7.0",
+    "axios": "^1.6.8"
   }
 }

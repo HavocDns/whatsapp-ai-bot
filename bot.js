@@ -1,7 +1,14 @@
-const venom = require('venom-bot');
+const makeWASocket = require('@whiskeysockets/baileys').default;
+const { useSingleFileAuthState } = require('@whiskeysockets/baileys');
 const axios = require('axios');
+const { Boom } = require('@hapi/boom');
+const fs = require('fs');
 
-const OPENROUTER_API_KEY = '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'; // 
+// Caminho do arquivo de autenticação
+const { state, saveState } = useSingleFileAuthState('./auth.json');
+
+// Sua chave da OpenRouter
+const OPENROUTER_API_KEY = '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';
 
 async function getAIResponse(message) {
   try {
@@ -21,38 +28,35 @@ async function getAIResponse(message) {
 
     return response.data.choices[0].message.content;
   } catch (error) {
-    console.error('Erro na chamada da IA:', error.response?.data || error.message);
-    return 'Desculpe, não consegui responder agora.';
+    console.error('Erro na IA:', error.response?.data || error.message);
+    return 'Desculpe, ocorreu um erro ao responder.';
   }
 }
 
-venom
-  .create({
-    session: 'whatsapp-bot',
-    headless: true, // 👈 Agora em modo headless (sem interface)
-    useChrome: true,
-    protocolTimeout: 60000,
-    browserArgs: [
-      '--no-sandbox',
-      '--disable-setuid-sandbox',
-      '--disable-dev-shm-usage',
-      '--disable-accelerated-2d-canvas',
-      '--disable-gpu'
-    ]
-  })
-  .then(client => start(client))
-  .catch(error => console.error('Erro ao iniciar o Venom:', error));
+async function connectBot() {
+  const sock = makeWASocket({
+    auth: state,
+    printQRInTerminal: true, // Mostra o QR para login
+  });
 
-function start(client) {
-  console.log('🤖 Bot iniciado!');
+  sock.ev.on('creds.update', saveState);
 
-  client.onMessage(async (message) => {
-    if (!message.isGroupMsg) {
-      console.log('📨 Mensagem recebida:', message.body);
+  sock.ev.on('messages.upsert', async ({ messages, type }) => {
+    if (type !== 'notify') return;
 
-      const reply = await getAIResponse(message.body);
-      await client.sendText(message.from, reply);
-      console.log('✅ Resposta enviada');
-    }
+    const msg = messages[0];
+    if (!msg.message || msg.key.fromMe) return;
+
+    const from = msg.key.remoteJid;
+    const text = msg.message.conversation || msg.message.extendedTextMessage?.text;
+    if (!text) return;
+
+    console.log('📩 Mensagem recebida:', text);
+
+    const reply = await getAIResponse(text);
+    await sock.sendMessage(from, { text: reply });
+    console.log('✅ Resposta enviada');
   });
 }
+
+connectBot();
